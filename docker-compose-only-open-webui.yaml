@@ -1,29 +1,22 @@
+version: "3"
 services:
-  # ollama:
-  #   volumes:
-  #     - ollama:/root/.ollama
-  #   container_name: ollama
-  #   pull_policy: always
-  #   tty: true
-  #   restart: unless-stopped
-  #   image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
-
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
   open-webui:
     build:
       context: .
       args:
         OLLAMA_BASE_URL: '/ollama'
       dockerfile: Dockerfile
-    image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
+    image: ghcr.io/aibrary-dev/open-webui:latest
     container_name: open-webui
     volumes:
       - open-webui:/app/backend/data
-    # depends_on:
-    #   - ollama
     ports:
       - ${OPEN_WEBUI_PORT-3000}:8080
     environment:
-      - 'OLLAMA_BASE_URL=http://ollama:11434'
       - 'WEBUI_SECRET_KEY='
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -31,5 +24,4 @@ services:
     env_file:
       - .env
 volumes:
-  # ollama: {}
   open-webui: {}
